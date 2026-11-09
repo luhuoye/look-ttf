@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.ufont.viewer'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.ufont.viewer"
+        minSdk 21                 // Android 5.0+，覆盖 99.9%
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+        resConfigs "zh", "en"     // 砍掉多余语言资源，包体更小
+    }
+
+    // ★ 你的目录是扁平的（不是标准 app/src/main 结构），在这里指路
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            assets.srcDirs = ['assets']
+            res.srcDirs = ['res']
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'   // 和正式版共存，不会互相覆盖
+            debuggable true
+        }
+        release {
+            minifyEnabled false            // 只有 WebView+1个Activity，混淆没收益还易踩坑
+            debuggable false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    packagingOptions {
+        resources.excludes += ['META-INF/*.kotlin_module', 'DebugProbesKt.bin']
+    }
+}
+
+// 不需要任何第三方依赖 —— 这就是它只有 ~1MB 的原因
+dependencies {
+    implementation 'androidx.core:core:1.13.1'   // 只为 FileChooserParams / ContextCompat
+}
