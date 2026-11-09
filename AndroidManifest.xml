@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ══════════════════ 权限说明（重点看这里）══════════════════
+  这个 App 只声明 1 个普通权限，且是 normal 级（安装时不弹窗）：
+
+  · INTERNET —— 其实纯离线也能跑。保留是为了 WebView 在部分ROM上
+                解析 blob:/字体回退时的内部试探，以及将来加"从URL取字体"。
+                想做到 100% 离线零权限，直接删掉这一行即可，App 照常工作。
+
+  ❌ 刻意【不】声明的（教程最爱乱加，加了只会吓跑用户/被商店拒）：
+  · READ_EXTERNAL_STORAGE / WRITE_EXTERNAL_STORAGE
+        → 选字体走 <input type="file"> 的系统文件选择器(SAF)，
+          拿到的是临时 URI 授权，不需要存储权限。
+        → 存 PNG 走 MediaStore(Q+) / getExternalFilesDir(9-)，
+          同样零权限。
+  · MANAGE_EXTERNAL_STORAGE  → 所有访问文件权限，Google Play 必拒
+  · CAMERA / RECORD_AUDIO / ACCESS_FINE_LOCATION
+        → 这个页面根本不调 getUserMedia / geolocation，一个都别加
+  · REQUEST_INSTALL_PACKAGES → 除非你要 App 内自更新
+  ═══════════════════════════════════════════════════════════
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="false"
+        android:supportsRtl="true"
+        android:largeHeap="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- 可选：让「用 … 打开」里出现本 App，别人分享 ttf 过来直接进查看器 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
